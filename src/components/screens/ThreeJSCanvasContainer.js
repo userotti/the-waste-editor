@@ -7,31 +7,30 @@ import * as THREE from 'three';
 
 const ContainerDiv = styled.div`
 padding: 20px;
-overflow: hidden;
-position: absolute;
-background-color: black;
 bottom:0;
 left:0;
 top:0;
 right: 0;
+background-color: black;
 `
 const StyledHeading = styled.h4`
-color: yellow;
-`
-const StyledCanvas = styled.canvas`
-width: 500px;
-height: 500px;
-border-style: solid;
-border-width: 5px;
-border-color: yellow;
+color: white;
 `
 
-const mapStateToProps = (state) =>{
-    return {
-        creatures: state.sceneState.creatures,
-        assets: state.assetState
-    }
-}
+const StyledDetail = styled.p`
+color: white;
+`
+
+const StyledCanvas = styled.canvas`
+
+width:500px;
+height:500px;
+border-style: solid;
+border-width: 5px;
+border-color: #232323;
+`
+
+
 
 class ThreeJSCanvasContainer extends Component {
 
@@ -40,7 +39,7 @@ class ThreeJSCanvasContainer extends Component {
         this.onResize();
         setTimeout(()=>{
                 // Load a texture
-        	let texture = new THREE.TextureLoader().load( "/static/assets/playplay/spritesheet.png" );
+        	let texture = assetManager.assetMap.tilesetTexture;
 
         	// Create a scene
         	this.scene = new THREE.Scene();
@@ -84,7 +83,7 @@ class ThreeJSCanvasContainer extends Component {
           window.addEventListener("resize", this.onResize.bind(this));
           this.startRequestAnimationFrame();
 
-        }, 2000)
+        }, 0)
 
 
 
@@ -166,8 +165,16 @@ class ThreeJSCanvasContainer extends Component {
     }
 }
 
-export default connect(
-  mapStateToProps,
+const mapStateToProps = (state) =>{
+    return {
+        assets: state.assetState
+    }
+}
+export default connect((state) =>{
+    return {
+        assets: state.assetState
+    }
+  },
   {
 
   }

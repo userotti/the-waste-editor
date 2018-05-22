@@ -10,9 +10,10 @@ bottom:0;
 left:0;
 top:0;
 right: 0;
+background-color: black;
 `
 const StyledHeading = styled.h4`
-color: black;
+color: white;
 `
 
 const StyledDetail = styled.p`
@@ -25,7 +26,7 @@ width:500px;
 height:500px;
 border-style: solid;
 border-width: 5px;
-border-color: black;
+border-color: #232323;
 `
 
 class StaticCanvasContainer extends Component {
@@ -82,9 +83,7 @@ class StaticCanvasContainer extends Component {
     }
 
     componentWillMount() {
-        if (!this.props.allAssetsLoaded){
-            this.props.push('/');
-        }
+
     }
 
     componentWillUnmount() {
@@ -146,7 +145,7 @@ class StaticCanvasContainer extends Component {
         this.drawingContext.translate(-this.canvasElement.width/2,-this.canvasElement.height/2);
 
 
-        let spritesheet = assetManager.assetMap.tilesetSpritesheet;
+        let spritesheet = assetManager.assetMap.tilesetImage;
         for (let [index, tileId] of props.tilemapJSON.layers[0].data.entries()){
 
             this.drawTile(this.drawingContext, spritesheet, {
@@ -176,7 +175,7 @@ class StaticCanvasContainer extends Component {
                 <StyledDetail> This canvas only redraws when we recieve new state from the server. </StyledDetail>
                 <StyledCanvas innerRef={(canvas) => { this.canvasElement = canvas }} />
 
-                
+
             </ContainerDiv>
         );
     }

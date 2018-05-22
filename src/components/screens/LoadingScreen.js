@@ -28,7 +28,7 @@ Input {
 Button {
   background-color: #00f;
   color: white;
-  padding: 5px;
+  padding: 20px;
 }
 
 `
@@ -150,7 +150,7 @@ class LoadingScreen extends Component {
 
           </Form>
 
-          { this.props.allAssetsLoaded ? <LoadedAssets >
+          <LoadedAssets>
 
             <LoadedAssetSection>
               <h2>Tile Set JSON</h2>
@@ -170,9 +170,7 @@ class LoadingScreen extends Component {
               </pre>
             </LoadedAssetSection>
 
-          </LoadedAssets> : null
-        }
-
+          </LoadedAssets>
 
       </Container>
 

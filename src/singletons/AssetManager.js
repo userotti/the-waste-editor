@@ -5,8 +5,8 @@ class AssetManager {
   constructor() {
 
     this.assetMap = {
-      tilemapTexture: null,
-      tilemapSpritesheet: null,
+      tilesetTexture: null,
+      tilesetImage: null,
     }
     // this.threeJSLoadingManager = new THREE.LoadingManager();
     //
@@ -34,10 +34,10 @@ class AssetManager {
 
   loadTilesetSpritesheetImage = (url) => new Promise((resolve, reject) => {
 
-    this.assetMap.tilesetSpritesheet = new Image();
-    this.assetMap.tilesetSpritesheet.onload = () => resolve({url, status: 'ok'});
-    this.assetMap.tilesetSpritesheet.onerror = () => reject({url, status: 'error'});
-    this.assetMap.tilesetSpritesheet.src = url;
+    this.assetMap.tilesetImage = new Image();
+    this.assetMap.tilesetImage.onload = () => resolve({url, status: 'ok'});
+    this.assetMap.tilesetImage.onerror = () => reject({url, status: 'error'});
+    this.assetMap.tilesetImage.src = url;
 
   })
 
@@ -50,8 +50,8 @@ class AssetManager {
 
       // onLoad callback
       (texture) => {
-        this.assetMap.tilemapTexture = texture;
-        resolve({url, status: 'ok', texture: this.assetMap.tilemapTexture});
+        this.assetMap.tilesetTexture = texture;
+        resolve({url, status: 'ok', texture: this.assetMap.tilesetTexture});
       },
 
       // onProgress callback currently not supported

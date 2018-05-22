@@ -8,6 +8,7 @@ const TopNavigation = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
+  background-color: #dedede;
 `;
 
 const TopNavigationLink = styled(Link)`
@@ -32,6 +33,10 @@ class Navigation extends Component {
 
       <TopNavigationLink to='/static-canvas' storeready={this.props.allAssetsLoaded ? 1 : 0}>
         Static Canvas
+      </TopNavigationLink>
+
+      <TopNavigationLink to='/threejs-canvas' storeready={this.props.allAssetsLoaded ? 1 : 0}>
+        ThreeJS
       </TopNavigationLink>
 
     </TopNavigation>)
