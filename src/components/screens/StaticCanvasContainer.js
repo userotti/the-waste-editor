@@ -175,6 +175,8 @@ class StaticCanvasContainer extends Component {
                 <StyledHeading>Canvas:</StyledHeading>
                 <StyledDetail> This canvas only redraws when we recieve new state from the server. </StyledDetail>
                 <StyledCanvas innerRef={(canvas) => { this.canvasElement = canvas }} />
+
+                
             </ContainerDiv>
         );
     }

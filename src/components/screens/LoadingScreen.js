@@ -7,7 +7,7 @@ import {
   setTilesetSpritesheetFileLocation,
   setTilemapJSONFileLocation
 } from '../../actions/assetActions/fileLocations'
-import { createNewGame, newUserLanded } from '../../actions/socketActions'
+
 import { assetManager } from '../../singletons/AssetManager'
 import { push } from 'react-router-redux';
 import styled from 'styled-components';
@@ -31,6 +31,17 @@ Button {
   padding: 5px;
 }
 
+`
+
+const LoadedAssets = styled.div`
+display: flex;
+align-items: flex-start;
+`
+
+const LoadedAssetSection = styled.div`
+padding: 20px;
+background-color: #f3f3f3;
+margin: 20px;
 `
 
 class LoadingScreen extends Component {
@@ -78,7 +89,7 @@ class LoadingScreen extends Component {
         ]).then((response)=>{
 
           this.props.allAssetsLoaded();
-          this.props.push('/static-canvas');
+          // this.props.push('/static-canvas');
 
         }).catch((err)=>{
 
@@ -138,31 +149,56 @@ class LoadingScreen extends Component {
             </FormItem>
 
           </Form>
-        </Container>
 
-      );
+          { this.props.allAssetsLoaded ? <LoadedAssets >
 
-    }
+            <LoadedAssetSection>
+              <h2>Tile Set JSON</h2>
+              <pre>
+                <code>
+                  { JSON.stringify(this.props.tilesetJSON, null, 4) }
+                </code>
+              </pre>
+            </LoadedAssetSection>
+
+            <LoadedAssetSection>
+              <h2>Tile Map JSON</h2>
+              <pre>
+                <code>
+                  { JSON.stringify(this.props.tilemapJSON, null, 4) }
+                </code>
+              </pre>
+            </LoadedAssetSection>
+
+          </LoadedAssets> : null
+        }
+
+
+      </Container>
+
+    );
+
   }
+}
 
-  const WrappedLoadingScreen = Form.create()(LoadingScreen);
+const WrappedLoadingScreen = Form.create()(LoadingScreen);
 
-  export default connect(
-    state => ({
-      tilesetJSONLocation: state.assetState.fileLocations.tilesetJSONLocation,
-      tilesetSpritesheetLocation: state.assetState.fileLocations.tilesetSpritesheetLocation,
-      tilemapJSONLocation: state.assetState.fileLocations.tilemapJSONLocation,
+export default connect(
+  state => ({
+    tilesetJSONLocation: state.assetState.fileLocations.tilesetJSONLocation,
+    tilesetSpritesheetLocation: state.assetState.fileLocations.tilesetSpritesheetLocation,
+    tilemapJSONLocation: state.assetState.fileLocations.tilemapJSONLocation,
 
-      tilesetJSON: state.assetState.tilesetJSON,
-      tilesetImageLoaded: state.assetState.tilesetImage,
-      tilemapJSON: state.assetState.tilemapJSON
+    tilesetJSON: state.assetState.tilesetJSON,
+    tilesetImageLoaded: state.assetState.tilesetImage,
+    tilemapJSON: state.assetState.tilemapJSON
 
-    }),
-    {
-      loadTilesetJSON,
-      loadTilemapJSON,
-      loadTilesetSpritesheet,
-      push,
-      allAssetsLoaded
-    }
-  )(WrappedLoadingScreen);
+  }),
+  {
+    loadTilesetJSON,
+    loadTilemapJSON,
+    loadTilesetSpritesheet,
+    push,
+    allAssetsLoaded
+  }
+)(WrappedLoadingScreen);

@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { createCreature, updateCreature, deleteCreature } from '../../actions/creatureActions'
-import { tilesetFetchData } from '../../actions/assetActions'
 import styled from 'styled-components';
-import { spritesheetManager } from '../../singletons/SpritesheetManager'
+import { assetManager } from '../../singletons/AssetManager'
 import * as THREE from 'three';
 
 

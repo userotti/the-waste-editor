@@ -1,10 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { createCreature, updateCreature, deleteCreature } from '../../actions/creatureActions'
-import { tilesetFetchData } from '../../actions/assetActions'
-
-
-
 import styled from 'styled-components';
 
 const ContainerDiv = styled.div`
@@ -104,10 +99,10 @@ class AnimatingCanvasContainer extends Component {
                 switch (creature.behaviour) {
                     case 'move-left':
 
-                        props.dispatch(updateCreature(creature.id, {
-                            posx: creature.posx + 20,
-                            touched: now
-                        }));
+                        // props.dispatch(updateCreature(creature.id, {
+                        //     posx: creature.posx + 20,
+                        //     touched: now
+                        // }));
 
                         break;
                     default:
@@ -161,19 +156,19 @@ class AnimatingCanvasContainer extends Component {
 
 
         let creatureId = Math.random();
-        this.props.dispatch(createCreature(creatureId, {
-            id: creatureId,
-            name: "Koos",
-            age: 0,
-            color: 'red',
-            behaviour: 'move-left',
-            deltatime: 100,
-            posx: 100,
-            posy: 100,
-            previousPosx: 100,
-            previousPosy: 100,
-            touched: Date.now()
-        }));
+        // this.props.dispatch(createCreature(creatureId, {
+        //     id: creatureId,
+        //     name: "Koos",
+        //     age: 0,
+        //     color: 'red',
+        //     behaviour: 'move-left',
+        //     deltatime: 100,
+        //     posx: 100,
+        //     posy: 100,
+        //     previousPosx: 100,
+        //     previousPosy: 100,
+        //     touched: Date.now()
+        // }));
         // name: action.payload.name ? action.payload.name : "Random Creature "+ Math.random(),
         // age: action.payload.age ? action.payload.age : 0,
         // color: action.payload.color ? action.payload.color : 'white',
