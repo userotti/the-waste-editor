@@ -1,60 +1,104 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
+import React, { Component } from 'react';
+import { connect } from "react-redux";
+import { Route, Link } from 'react-router-dom';
 import { ConnectedRouter } from 'react-router-redux';
+import styled from 'styled-components';
+import store from './store';
+import { push } from 'react-router-redux';
+
+import asyncComponent from "./helpers/AsyncFunc";
+import Navigation from './components/Navigation';
+import AnimatingCanvasContainer from './components/screens/AnimatingCanvasContainer'
+import StaticCanvasContainer from './components/screens/StaticCanvasContainer'
+import ThreeJSCanvasContainer from './components/screens/ThreeJSCanvasContainer'
+
+import loadingActions from './actions/assetActions/loading';
 
 
-import AnimatingCanvasContainer from './components/AnimatingCanvasContainer'
-import StaticCanvasContainer from './components/StaticCanvasContainer/staticCanvasContainer'
-import ThreeJSCanvasContainer from './components/ThreeJSCanvasContainer'
-import LoadingScreen from './components/LoadingScreen/loadingScreen'
+const { loadTilesetJSON, loadTilemapJSON, loadTilesetSpritesheet, allAssetsLoaded } = loadingActions;
 
 
-// const RestrictedRoute = ({ component: Component, isLoggedIn, ...rest }) => (
-//     <Route
-//         {...rest}
-//         render={props => isLoggedIn
-//             ? <Component {...props} />
-//             : <Redirect
-//                 to={{
-//                     pathname: '/login',
-//                     state: { from: props.location },
-//                 }}
-//             />}
-//         />
-//     );
+class PublicRoutes extends Component {
 
-const PublicRoutes = ({ history }) => {
+  getRoutes = () => {
+    return [
+      {
+        path: "/",
+        component: asyncComponent(() => {
 
+          return new Promise(function(resolve, reject) {
+            resolve(import('./components/screens/LoadingScreen'));
+          });
+
+        })
+      },
+
+      {
+        path: "/static-canvas",
+        component: asyncComponent(() => {
+
+          if (this.props.allAssetsLoaded){
+            return import('./components/screens/StaticCanvasContainer');
+          } else {
+            this.props.push('/');
+            return Promise.reject({allAssetsLoaded: this.props.allAssetsLoaded});
+          }
+
+        })
+      },
+
+      {
+        path: "/threejs-canvas",
+        component: asyncComponent(() => {
+
+          if (this.props.allAssetsLoaded){
+            return import('./components/screens/ThreeJSCanvasContainer');
+          } else {
+            this.props.push('/');
+            return Promise.reject({allAssetsLoaded: this.props.allAssetsLoaded});
+          }
+
+        })
+      },
+
+    ]
+  }
+
+  render() {
     return (
-        <ConnectedRouter history={history}>
-            <div>
-                {/* <Route exact path="/" render={()=>{
-                    return <Redirect to={{
-                                pathname: '/home',
-                            }}/>
-                }}>
-                </Route> */}
 
 
-                <Route exact path="/" component={LoadingScreen}/>
-                <Route path="/lobby" component={LoadingScreen}/>
-                <Route path="/static-canvas" component={StaticCanvasContainer}/>
-                <Route path="/animating-canvas" component={AnimatingCanvasContainer}/>
-                <Route path="/threejs-canvas" component={ThreeJSCanvasContainer}/>
+      <ConnectedRouter history={this.props.history}>
+        <div>
 
-                {/* <Route
-                    exact
-                    path={'/unrecognized-token'}
-                    component={asyncComponent(() => import('./containers/Page/SMME/unrecognizedToken/unrecognizedToken'))}
-                /> */}
-                {/* <RestrictedRoute
-                    path="/smme-workspace"
-                    component={SMMEApp}
-                    isLoggedIn={isLoggedIn}
-                /> */}
-            </div>
-        </ConnectedRouter>
+          <Navigation></Navigation>
+
+          {this.getRoutes().map(singleRoute => {
+            const { path, exact, ...otherProps } = singleRoute;
+            return (
+              <Route
+                exact={exact === false ? false : true}
+                key={path}
+                path={`${path}`}
+                {...otherProps}
+              />
+            );
+          })}
+
+        </div>
+      </ConnectedRouter>
     );
+  }
+
 };
 
-export default PublicRoutes
+export default connect(
+  state => ({
+
+    allAssetsLoaded: state.assetState.allAssetsLoaded,
+
+  }),
+  {
+    push
+  }
+)(PublicRoutes);

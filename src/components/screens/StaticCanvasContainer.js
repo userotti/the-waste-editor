@@ -6,16 +6,13 @@ import styled from 'styled-components';
 
 const ContainerDiv = styled.div`
 padding: 20px;
-overflow: hidden;
-position: absolute;
-background-color: black;
 bottom:0;
 left:0;
 top:0;
 right: 0;
 `
 const StyledHeading = styled.h4`
-color: yellow;
+color: black;
 `
 
 const StyledDetail = styled.p`
@@ -28,7 +25,7 @@ width:500px;
 height:500px;
 border-style: solid;
 border-width: 5px;
-border-color: yellow;
+border-color: black;
 `
 
 class StaticCanvasContainer extends Component {
@@ -86,7 +83,7 @@ class StaticCanvasContainer extends Component {
 
     componentWillMount() {
         if (!this.props.allAssetsLoaded){
-            this.props.push('/loading');
+            this.props.push('/');
         }
     }
 

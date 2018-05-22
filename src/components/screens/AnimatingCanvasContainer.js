@@ -156,7 +156,7 @@ class AnimatingCanvasContainer extends Component {
 
     screenTap(){
 
-        
+
         // this.props.dispatch(tilesetFetchData('/static/assets/tiled/skellie.json'));
 
 
