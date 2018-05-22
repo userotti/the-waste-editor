@@ -34,7 +34,7 @@ function tilemapJSONReducer(state = null, action){
   }
 }
 
-function allAssetsLoadedReducer(state = false, action){
+function allAssetsLoadedReducer(state = null, action){
   switch (action.type) {
       case 'ALL_ASSETS_LOADED':
       return action.payload;

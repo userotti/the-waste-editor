@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
@@ -14,6 +15,7 @@ const TopNavigationLink = styled(Link)`
   margin-left: 10px;
   text-align: center;
   background-color: black;
+  opacity: ${(props)=> props.storeready ? 1 : 0.2 };
   color: white;
   text-decoration: none;
 `;
@@ -24,11 +26,11 @@ class Navigation extends Component {
 
     return (<TopNavigation>
 
-      <TopNavigationLink to='/'>
+      <TopNavigationLink to='/' storeready={1}>
         Assets Loading
       </TopNavigationLink>
 
-      <TopNavigationLink to='/static-canvas'>
+      <TopNavigationLink to='/static-canvas' storeready={this.props.allAssetsLoaded ? 1 : 0}>
         Static Canvas
       </TopNavigationLink>
 
@@ -38,4 +40,10 @@ class Navigation extends Component {
 
 }
 
-export default Navigation
+
+export default connect(
+  state => ({
+    allAssetsLoaded: state.assetState.allAssetsLoaded,
+  }),
+  {}
+)(Navigation);
