@@ -8,28 +8,17 @@ class AssetManager {
       tilesetTexture: null,
       tilesetImage: null,
     }
-    // this.threeJSLoadingManager = new THREE.LoadingManager();
-    //
-    // this.threeJSLoadingManager.onStart = ( url, itemsLoaded, itemsTotal ) => {
-    //   console.log( 'Asset Manager: Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-    // };
-    //
-    // this.threeJSLoadingManager.onLoad = () => {
-    //   console.log( 'Asset Manager: Loading complete!');
-    // };
-    //
-    // this.threeJSLoadingManager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-    //   console.log( 'Asset Manager: Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-    // };
-    //
-    // this.threeJSLoadingManager.onError = function ( url ) {
-    //   console.log( 'Asset Manager: There was an error loading ' + url );
-    // };
 
     this.threeJSTextureLoader = new THREE.TextureLoader();
 
+  }
 
-
+  getTilesetTexture = () => {
+    if (this.assetMap.tilesetTexture){
+      return this.assetMap.tilesetTexture
+    } else {
+      console.error("trying to acces the AssetsManager Assets before its been loaded!");
+    }
   }
 
   loadTilesetSpritesheetImage = (url) => new Promise((resolve, reject) => {

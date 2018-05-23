@@ -17,6 +17,7 @@ const TopNavigationLink = styled(Link)`
   text-align: center;
   background-color: black;
   opacity: ${(props)=> props.storeready ? 1 : 0.2 };
+  cursor: ${(props)=> props.storeready ? `pointer` : `not-allowed` };
   color: white;
   text-decoration: none;
 `;
@@ -31,11 +32,11 @@ class Navigation extends Component {
         Assets Loading
       </TopNavigationLink>
 
-      <TopNavigationLink to='/static-canvas' storeready={this.props.allAssetsLoaded ? 1 : 0}>
+      <TopNavigationLink to={this.props.allAssetsLoaded ? '/static-canvas' : '' } storeready={this.props.allAssetsLoaded ? 1 : 0}>
         Static Canvas
       </TopNavigationLink>
 
-      <TopNavigationLink to='/threejs-canvas' storeready={this.props.allAssetsLoaded ? 1 : 0}>
+      <TopNavigationLink to={this.props.allAssetsLoaded ? '/threejs-canvas' : '' } storeready={this.props.allAssetsLoaded ? 1 : 0}>
         ThreeJS
       </TopNavigationLink>
 

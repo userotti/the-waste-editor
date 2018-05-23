@@ -33,149 +33,118 @@ border-color: #232323;
 
 
 class ThreeJSCanvasContainer extends Component {
-
-    componentDidMount() {
-
-        this.onResize();
-        setTimeout(()=>{
-                // Load a texture
-        	let texture = assetManager.assetMap.tilesetTexture;
-
-        	// Create a scene
-        	this.scene = new THREE.Scene();
-
-        	// Create a geometry
-        	// 	Create a box (cube) of 10 width, length, and height
-        	let geometry = new THREE.BoxGeometry( 10, 10, 10 );
-        	// Create a MeshBasicMaterial with a loaded texture
-        	let material = new THREE.MeshBasicMaterial( { map: texture} );
-
-        	// Combine the geometry and material into a mesh
-        	this.mesh = new THREE.Mesh( geometry, material );
-
-          // Create a geometry
-
-
-          // // 	Create a box (cube) of 10 width, length, and height
-        	// let geometry = new THREE.BoxGeometry( 10, 10, 10 );
-        	// // Create a MeshBasicMaterial with a color white and with its wireframe turned on
-        	// let material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false} );
-          //
-        	// // Combine the geometry and material into a mesh
-        	// this.mesh = new THREE.Mesh( geometry, material );
-        	// // Add the mesh to the scene
-
-        	// Add the mesh to the scene
-        	this.scene.add( this.mesh );
-
-        	// Create a camera
-        	// 	Set a Field of View (FOV) of 75 degrees
-        	// 	Set an Apsect Ratio of the inner width divided by the inner height of the window
-        	//	Set the 'Near' distance at which the camera will start rendering scene objects to 2
-        	//	Set the 'Far' (draw distance) at which objects will not be rendered to 1000
-        	this.camera = new THREE.PerspectiveCamera( 75, 1, 2, 1000 );
-        	// Move the camera 'out' by 30
-        	this.camera.position.z = 30;
-
-        	// Create a WebGL Rendered
-        	this.renderer = new THREE.WebGLRenderer({ canvas: this.canvasElement });
-
-          window.addEventListener("resize", this.onResize.bind(this));
-          this.startRequestAnimationFrame();
-
-        }, 0)
-
-
-
-
-    }
-
-    componentWillUnmount() {
-
-        window.removeEventListener("resize", this.onResize.bind(this));
-
-    }
-
-
-    startRequestAnimationFrame() {
-        if (!this.requestId) {
-           this.requestId = window.requestAnimationFrame(this.animationLoop);
-        }
-    }
-
-    stopRequestAnimationFrame() {
-        if (this.requestId) {
-           window.cancelAnimationFrame(this.requestId);
-           this.requestId = undefined;
-        }
-    }
-
-    animationLoop = (time) => {
-        this.requestId = undefined;
-
-        // Rotate the x position of the mesh by 0.03
-	      this.mesh.rotation.x += 0.03;
-      	// Rotate the y position of the mesh by 0.02
-      	this.mesh.rotation.y += 0.02;
-
-
-        this.renderer.render(this.scene,this.camera);
-        this.startRequestAnimationFrame();
-    }
-
-    onResize() {
-        if (this.canvasElement){
-            this.updateCanvasDimensions();
-        }
-    }
-
-    updateCanvasDimensions() {
-        if (this.canvasElement){
-
-            //Make fullscreen canvas, but we can do anything here.
-
-            // Lookup the size the browser is displaying the canvas.
-            var displayWidth  = 500;
-            var displayHeight = 500;
-
-            // Check if the canvas is not the same size.
-            if (this.canvasElement.width  !== 500 || this.canvasElement.height !== 500) {
-
-                // Make the canvas the same size
-                this.canvasElement.width  = displayWidth;
-                this.canvasElement.height = displayHeight;
-
-
-            }
-        }
-    }
-
-
-    shouldComponentUpdate(props) {
-        return false;
-    }
-
-    render() {
-        return (
-            <ContainerDiv>
-                <StyledHeading>Canvas:</StyledHeading>
-                <StyledCanvas innerRef={(canvas) => { this.canvasElement = canvas }} onClick={() => this.screenTap() } />
-            </ContainerDiv>
-        );
-    }
-}
-
-const mapStateToProps = (state) =>{
-    return {
-        assets: state.assetState
-    }
-}
-export default connect((state) =>{
-    return {
-        assets: state.assetState
-    }
-  },
-  {
+  state = {
 
   }
+  componentDidMount() {
+
+    this.onResize();
+    window.addEventListener("resize", this.onResize.bind(this));
+    this.startRequestAnimationFrame();
+
+    // Create a scene
+    this.setState({
+        renderer: new THREE.WebGLRenderer({ canvas: this.canvasElement }),
+        scene: new THREE.Scene(),
+        camera: new THREE.PerspectiveCamera( 75, 1, 2, 1000 ),
+        tilesetTexture: assetManager.assetMap.tilesetTexture,
+        singleTileGeometry: new THREE.BoxGeometry( 10, 10, 1 )
+    }, ()=>{
+
+      console.log('state: ', this.state);
+      //
+      // let material = new THREE.MeshBasicMaterial( { map: texture} );
+      // mesh = new THREE.Mesh( geometry, material );
+      // scene.add( this.mesh );
+      // camera.position.z = 30;
+
+
+    });
+
+  }
+
+  componentWillUnmount() {
+
+    window.removeEventListener("resize", this.onResize.bind(this));
+
+  }
+
+
+  startRequestAnimationFrame() {
+    if (!this.requestId) {
+      this.requestId = window.requestAnimationFrame(this.animationLoop);
+    }
+  }
+
+  stopRequestAnimationFrame() {
+    if (this.requestId) {
+      window.cancelAnimationFrame(this.requestId);
+      this.requestId = undefined;
+    }
+  }
+
+  animationLoop = (time) => {
+    this.requestId = undefined;
+    //
+    // // Rotate the x position of the mesh by 0.03
+    // this.mesh.rotation.x += 0.03;
+    // // Rotate the y position of the mesh by 0.02
+    // this.mesh.rotation.y += 0.02;
+
+
+    this.state.renderer.render(this.state.scene,this.state.camera);
+    this.startRequestAnimationFrame();
+  }
+
+  onResize() {
+    if (this.canvasElement){
+      this.updateCanvasDimensions();
+    }
+  }
+
+  updateCanvasDimensions() {
+    if (this.canvasElement){
+
+      //Make fullscreen canvas, but we can do anything here.
+
+      // Lookup the size the browser is displaying the canvas.
+      var displayWidth  = 500;
+      var displayHeight = 500;
+
+      // Check if the canvas is not the same size.
+      if (this.canvasElement.width  !== 500 || this.canvasElement.height !== 500) {
+
+        // Make the canvas the same size
+        this.canvasElement.width  = displayWidth;
+        this.canvasElement.height = displayHeight;
+
+
+      }
+    }
+  }
+
+
+  shouldComponentUpdate(props) {
+    return false;
+  }
+
+  render() {
+    return (
+      <ContainerDiv>
+        <StyledHeading>Canvas:</StyledHeading>
+        <StyledCanvas innerRef={(canvas) => { this.canvasElement = canvas }} onClick={() => this.screenTap() } />
+      </ContainerDiv>
+    );
+  }
+}
+
+
+export default connect((state) =>{
+  return {
+    assets: state.assetState
+  }
+},
+{
+
+}
 )(ThreeJSCanvasContainer);
