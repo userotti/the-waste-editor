@@ -21,6 +21,14 @@ class AssetManager {
     }
   }
 
+  getTilesetImage = () => {
+    if (this.assetMap.tilesetImage){
+      return this.assetMap.tilesetImage
+    } else {
+      console.error("trying to acces the AssetsManager Assets before its been loaded!");
+    }
+  }
+
   loadTilesetSpritesheetImage = (url) => new Promise((resolve, reject) => {
 
     this.assetMap.tilesetImage = new Image();
