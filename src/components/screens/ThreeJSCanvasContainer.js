@@ -5,7 +5,7 @@ import { assetManager } from '../../singletons/AssetManager'
 import * as THREE from 'three';
 import * as dat from 'dat.gui';
 
-const gui = new dat.GUI();
+
 const ContainerDiv = styled.div`
 padding: 20px;
 bottom:0;
@@ -59,6 +59,7 @@ class ThreeJSCanvasContainer extends Component {
 
     this.onResize();
     window.addEventListener("resize", this.onResize.bind(this));
+		this.ThreeJSCanvasElement.addEventListener("wheel", this.onWheel);
     this.startRequestAnimationFrame();
 
     let tilemapCanvas = document.createElement('canvas');
@@ -75,7 +76,7 @@ class ThreeJSCanvasContainer extends Component {
 
     // Create a scene
     this.setState({
-        renderer: new THREE.WebGLRenderer({ canvas: this.canvasElement }),
+        renderer: new THREE.WebGLRenderer({ canvas: this.ThreeJSCanvasElement }),
         scene: new THREE.Scene(),
         camera: new THREE.OrthographicCamera( cameraWidth / - 2, cameraWidth / 2, cameraHeight / 2, cameraHeight / - 2, 1, 1000 ),
         tilesetTexture: assetManager.getTilesetTexture(),
@@ -91,15 +92,15 @@ class ThreeJSCanvasContainer extends Component {
 
       this.material = new THREE.MeshBasicMaterial( { map: canvasTexture} );
       this.material.map.magFilter = THREE.NearestFilter;
-			this.material.map.minFilter = THREE.LinearMipMapLinearFilter;
+			this.material.map.minFilter = THREE.NearestFilter;
 
       this.mesh = new THREE.Mesh( this.state.singleTileGeometry, this.material );
-      this.mesh.rotation.x = -Math.PI / 2;
-
+      this.state.camera.position.set(0,0,10);
       this.state.scene.add(this.mesh);
 
-      this.initGui()
+			this.gui = new dat.GUI();
 
+			this.initGui();
     });
 
   }
@@ -107,11 +108,11 @@ class ThreeJSCanvasContainer extends Component {
   updateTilemapCanvas(props) {
 
       this.state.tilemapCanvasContext.resetTransform();
-      this.state.tilemapCanvasContext.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
+      this.state.tilemapCanvasContext.clearRect(0,0, this.ThreeJSCanvasElement.width, this.ThreeJSCanvasElement.height);
 
-      // this.state.tilemapCanvasContext.translate(this.canvasElement.width/2,this.canvasElement.height/2);
+      // this.state.tilemapCanvasContext.translate(this.ThreeJSCanvasElement.width/2,this.ThreeJSCanvasElement.height/2);
       // this.state.tilemapCanvasContext.scale(this.camera.zoomLevel, this.camera.zoomLevel);
-      // this.state.tilemapCanvasContext.translate(-this.canvasElement.width/2,-this.canvasElement.height/2);
+      // this.state.tilemapCanvasContext.translate(-this.ThreeJSCanvasElement.width/2,-this.ThreeJSCanvasElement.height/2);
 
 
       let spritesheet = assetManager.getTilesetImage();
@@ -139,13 +140,13 @@ class ThreeJSCanvasContainer extends Component {
   initGui = () => {
   	var drop;
 
-  	gui.add( API, 'offsetX', 0.0, 1.0 ).name( 'offset.x' ).onChange( this.updateUvTransform );
-  	gui.add( API, 'offsetY', 0.0, 1.0 ).name( 'offset.y' ).onChange( this.updateUvTransform );
-  	gui.add( API, 'repeatX', 0.0, 2.0 ).name( 'repeat.x' ).onChange( this.updateUvTransform );
-  	gui.add( API, 'repeatY', 0.0, 2.0 ).name( 'repeat.y' ).onChange( this.updateUvTransform );
-  	gui.add( API, 'rotation', - 2.0, 2.0 ).name( 'rotation' ).onChange( this.updateUvTransform );
-  	gui.add( API, 'centerX', 0.0, 1.0 ).name( 'center.x' ).onChange( this.updateUvTransform );
-  	gui.add( API, 'centerY', 0.0, 1.0 ).name( 'center.y' ).onChange( this.updateUvTransform );
+  	this.gui.add( API, 'offsetX', 0.0, 1.0 ).name( 'offset.x' ).onChange( this.updateUvTransform );
+  	this.gui.add( API, 'offsetY', 0.0, 1.0 ).name( 'offset.y' ).onChange( this.updateUvTransform );
+  	this.gui.add( API, 'repeatX', 0.0, 2.0 ).name( 'repeat.x' ).onChange( this.updateUvTransform );
+  	this.gui.add( API, 'repeatY', 0.0, 2.0 ).name( 'repeat.y' ).onChange( this.updateUvTransform );
+  	this.gui.add( API, 'rotation', - 2.0, 2.0 ).name( 'rotation' ).onChange( this.updateUvTransform );
+  	this.gui.add( API, 'centerX', 0.0, 1.0 ).name( 'center.x' ).onChange( this.updateUvTransform );
+  	this.gui.add( API, 'centerY', 0.0, 1.0 ).name( 'center.y' ).onChange( this.updateUvTransform );
   }
 
   updateUvTransform = () => {
@@ -171,6 +172,7 @@ class ThreeJSCanvasContainer extends Component {
 
   componentWillUnmount() {
 
+		this.gui.destroy()
     window.removeEventListener("resize", this.onResize.bind(this));
 
   }
@@ -196,21 +198,21 @@ class ThreeJSCanvasContainer extends Component {
     // this.mesh.rotation.x += 0.03;
     // // Rotate the y position of the mesh by 0.02
     // this.mesh.rotation.y += 0.02;
-    this.state.camera.position.set( 10 * Math.sin(time*0.001), 10 ,  10 * Math.cos(time*0.001) );
-    this.state.camera.lookAt( this.state.scene.position );
+    //
+    // this.state.camera.lookAt( this.state.scene.position );
 
     this.state.renderer.render(this.state.scene,this.state.camera);
     this.startRequestAnimationFrame();
   }
 
   onResize() {
-    if (this.canvasElement){
+    if (this.ThreeJSCanvasElement){
       this.updateCanvasDimensions();
     }
   }
 
   updateCanvasDimensions() {
-    if (this.canvasElement){
+    if (this.ThreeJSCanvasElement){
 
       //Make fullscreen canvas, but we can do anything here.
 
@@ -219,11 +221,11 @@ class ThreeJSCanvasContainer extends Component {
       var displayHeight = 800;
 
       // Check if the canvas is not the same size.
-      if (this.canvasElement.width  !== 800 || this.canvasElement.height !== 800) {
+      if (this.ThreeJSCanvasElement.width  !== 800 || this.ThreeJSCanvasElement.height !== 800) {
 
         // Make the canvas the same size
-        this.canvasElement.width  = displayWidth;
-        this.canvasElement.height = displayHeight;
+        this.ThreeJSCanvasElement.width  = displayWidth;
+        this.ThreeJSCanvasElement.height = displayHeight;
 
 
       }
@@ -235,6 +237,12 @@ class ThreeJSCanvasContainer extends Component {
 
   }
 
+	onWheel = (e) => {
+
+		console.log('hallo')
+
+	}
+
 
   shouldComponentUpdate(props) {
     return false;
@@ -244,7 +252,7 @@ class ThreeJSCanvasContainer extends Component {
     return (
       <ContainerDiv>
         <StyledHeading>Canvas:</StyledHeading>
-        <StyledCanvas innerRef={(canvas) => { this.canvasElement = canvas }} onClick={() => this.screenTap() } />
+        <StyledCanvas innerRef={(canvas) => { this.ThreeJSCanvasElement = canvas }} onClick={() => this.screenTap() } />
       </ContainerDiv>
     );
   }

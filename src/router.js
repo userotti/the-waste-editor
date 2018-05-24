@@ -11,6 +11,8 @@ import Navigation from './components/Navigation';
 import AnimatingCanvasContainer from './components/screens/AnimatingCanvasContainer'
 import StaticCanvasContainer from './components/screens/StaticCanvasContainer'
 import ThreeJSCanvasContainer from './components/screens/ThreeJSCanvasContainer'
+import PixiJSCanvasContainer from './components/screens/PixiJSCanvasContainer'
+
 
 import loadingActions from './actions/assetActions/loading';
 
@@ -53,6 +55,20 @@ class PublicRoutes extends Component {
 
           if (this.props.allAssetsLoaded){
             return import('./components/screens/ThreeJSCanvasContainer');
+          } else {
+            this.props.push('/');
+            return Promise.reject({allAssetsLoaded: this.props.allAssetsLoaded});
+          }
+
+        })
+      },
+
+      {
+        path: "/pixijs-canvas",
+        component: asyncComponent(() => {
+
+          if (this.props.allAssetsLoaded){
+            return import('./components/screens/PixiJSCanvasContainer');
           } else {
             this.props.push('/');
             return Promise.reject({allAssetsLoaded: this.props.allAssetsLoaded});

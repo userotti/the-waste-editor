@@ -40,6 +40,10 @@ class Navigation extends Component {
         ThreeJS
       </TopNavigationLink>
 
+      <TopNavigationLink to={this.props.allAssetsLoaded ? '/pixijs-canvas' : '' } storeready={this.props.allAssetsLoaded ? 1 : 0}>
+        PixiJS
+      </TopNavigationLink>
+
     </TopNavigation>)
 
   }
