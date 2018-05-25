@@ -7,6 +7,25 @@
  "spacing":0,
  "tilecount":1024,
  "tileheight":16,
+ "tiles":
+    {
+     "288":
+        {
+         "animation":[
+                {
+                 "duration":250,
+                 "tileid":103
+                }, 
+                {
+                 "duration":600,
+                 "tileid":259
+                }, 
+                {
+                 "duration":450,
+                 "tileid":260
+                }]
+        }
+    },
  "tilewidth":16,
  "transparentcolor":"#ff00ff",
  "type":"tileset"

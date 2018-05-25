@@ -45,9 +45,9 @@ class PixiJSCanvasContainer extends Component {
 		super();
 
 		this.guiState = {
-			cameraZoomLevel: 1,
-			cameraPanX: 0,
-			cameraPanY: 0,
+			cameraZoomLevel: 3,
+			cameraPanX: -595,
+			cameraPanY: -609,
 		}
 
 	}
@@ -88,7 +88,14 @@ class PixiJSCanvasContainer extends Component {
 			this.state.pixiApp.stage.addChild(this.camera);
 
 			this.setGuiState();
-
+			//
+			// setTimeout(()=>{
+			//
+			// 	console.log('maak skoon', texture);
+			// 	this.state.tilemapCanvasContext.clearRect(0,0, this.state.tilemapCanvas.width, this.state.tilemapCanvas.height);
+			// 	texture.baseTexture.update();
+			//
+			// }, 2000);
 
 
 			this.gui = new dat.GUI();
@@ -163,6 +170,7 @@ class PixiJSCanvasContainer extends Component {
 
 	animationLoop = (time) => {
 		this.requestId = undefined;
+
 
 
 		this.startRequestAnimationFrame();
