@@ -32,15 +32,15 @@ class Navigation extends Component {
         Assets Loading
       </TopNavigationLink>
 
-      <TopNavigationLink to={this.props.allAssetsLoaded ? '/static-canvas' : '' } storeready={this.props.allAssetsLoaded ? 1 : 0}>
+      <TopNavigationLink to={this.props.allTiledAssetsLoaded ? '/static-canvas' : '' } storeready={this.props.allTiledAssetsLoaded ? 1 : 0}>
         Static Canvas
       </TopNavigationLink>
 
-      <TopNavigationLink to={this.props.allAssetsLoaded ? '/threejs-canvas' : '' } storeready={this.props.allAssetsLoaded ? 1 : 0}>
+      <TopNavigationLink to={this.props.allTiledAssetsLoaded ? '/threejs-canvas' : '' } storeready={this.props.allTiledAssetsLoaded ? 1 : 0}>
         ThreeJS
       </TopNavigationLink>
 
-      <TopNavigationLink to={this.props.allAssetsLoaded ? '/pixijs-canvas' : '' } storeready={this.props.allAssetsLoaded ? 1 : 0}>
+      <TopNavigationLink to={this.props.allTiledAssetsLoaded ? '/pixijs-canvas' : '' } storeready={this.props.allTiledAssetsLoaded ? 1 : 0}>
         PixiJS
       </TopNavigationLink>
 
@@ -53,7 +53,7 @@ class Navigation extends Component {
 
 export default connect(
   state => ({
-    allAssetsLoaded: state.assetState.allAssetsLoaded,
+    allTiledAssetsLoaded: state.tiledState.allTiledAssetsLoaded,
   }),
   {}
 )(Navigation);

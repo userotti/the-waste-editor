@@ -6,7 +6,7 @@ const actions = {
   LOAD_TILEMAP_JSON_SUCCESS: 'LOAD_TILEMAP_JSON_SUCCESS',
   ALL_ASSETS_LOADED: 'ALL_ASSETS_LOADED',
 
-  allAssetsLoaded: () => {
+  allTiledAssetsLoaded: () => {
     return {
       type: 'ALL_ASSETS_LOADED',
       payload: true

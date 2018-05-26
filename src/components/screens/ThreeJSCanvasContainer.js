@@ -261,9 +261,9 @@ class ThreeJSCanvasContainer extends Component {
 
 export default connect((state) =>{
   return {
-    assets: state.assetState,
-    tilesetJSON: state.assetState.tilesetJSON,
-    tilemapJSON: state.assetState.tilemapJSON
+    assets: state.tiledState,
+    tilesetJSON: state.tiledState.tiledData.tilesetJSON,
+    tilemapJSON: state.tiledState.tiledData.tilemapJSON
   }
 },
 {

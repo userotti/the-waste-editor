@@ -26,7 +26,7 @@ border-color: yellow;
 const mapStateToProps = (state) =>{
     return {
         creatures: state.sceneState.creatures,
-        assets: state.assetState
+        assets: state.tiledState
     }
 }
 

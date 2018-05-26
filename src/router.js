@@ -17,7 +17,7 @@ import PixiJSCanvasContainer from './components/screens/PixiJSCanvasContainer'
 import loadingActions from './actions/assetActions/loading';
 
 
-const { loadTilesetJSON, loadTilemapJSON, loadTilesetSpritesheet, allAssetsLoaded } = loadingActions;
+const { loadTilesetJSON, loadTilemapJSON, loadTilesetSpritesheet, allTiledAssetsLoaded } = loadingActions;
 
 
 class PublicRoutes extends Component {
@@ -39,11 +39,11 @@ class PublicRoutes extends Component {
         path: "/static-canvas",
         component: asyncComponent(() => {
 
-          if (this.props.allAssetsLoaded){
+          if (this.props.allTiledAssetsLoaded){
             return import('./components/screens/StaticCanvasContainer');
           } else {
             this.props.push('/');
-            return Promise.reject({allAssetsLoaded: this.props.allAssetsLoaded});
+            return Promise.reject({allTiledAssetsLoaded: this.props.allTiledAssetsLoaded});
           }
 
         })
@@ -53,11 +53,11 @@ class PublicRoutes extends Component {
         path: "/threejs-canvas",
         component: asyncComponent(() => {
 
-          if (this.props.allAssetsLoaded){
+          if (this.props.allTiledAssetsLoaded){
             return import('./components/screens/ThreeJSCanvasContainer');
           } else {
             this.props.push('/');
-            return Promise.reject({allAssetsLoaded: this.props.allAssetsLoaded});
+            return Promise.reject({allTiledAssetsLoaded: this.props.allTiledAssetsLoaded});
           }
 
         })
@@ -67,11 +67,11 @@ class PublicRoutes extends Component {
         path: "/pixijs-canvas",
         component: asyncComponent(() => {
 
-          if (this.props.allAssetsLoaded){
+          if (this.props.allTiledAssetsLoaded){
             return import('./components/screens/PixiJSCanvasContainer');
           } else {
             this.props.push('/');
-            return Promise.reject({allAssetsLoaded: this.props.allAssetsLoaded});
+            return Promise.reject({allTiledAssetsLoaded: this.props.allTiledAssetsLoaded});
           }
 
         })
@@ -111,7 +111,7 @@ class PublicRoutes extends Component {
 export default connect(
   state => ({
 
-    allAssetsLoaded: state.assetState.allAssetsLoaded,
+    allTiledAssetsLoaded: state.tiledState.allTiledAssetsLoaded,
 
   }),
   {

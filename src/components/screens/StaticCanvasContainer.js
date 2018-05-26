@@ -183,15 +183,15 @@ class StaticCanvasContainer extends Component {
 
 export default connect(
   state => ({
-    tilesetJSONLocation: state.assetState.fileLocations.tilesetJSONLocation,
-    tilesetSpritesheetLocation: state.assetState.fileLocations.tilesetSpritesheetLocation,
-    tilemapJSONLocation: state.assetState.fileLocations.tilemapJSONLocation,
+    tilesetJSONLocation: state.tiledState.fileLocations.tilesetJSONLocation,
+    tilesetSpritesheetLocation: state.tiledState.fileLocations.tilesetSpritesheetLocation,
+    tilemapJSONLocation: state.tiledState.fileLocations.tilemapJSONLocation,
 
-    tilesetJSON: state.assetState.tilesetJSON,
-    tilesetImageLoaded: state.assetState.tilesetImage,
-    tilemapJSON: state.assetState.tilemapJSON,
+    tilesetJSON: state.tiledState.tiledData.tilesetJSON,
+    tilesetImageLoaded: state.tiledState.tilesetImage,
+    tilemapJSON: state.tiledState.tiledData.tilemapJSON,
 
-    allAssetsLoaded: state.assetState.allAssetsLoaded
+    allTiledAssetsLoaded: state.tiledState.allTiledAssetsLoaded
 
   }),
   {

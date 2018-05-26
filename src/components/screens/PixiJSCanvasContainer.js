@@ -1,11 +1,15 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components';
-import { assetManager } from '../../singletons/AssetManager'
+import { assetManager } from '../../singletons/AssetManager';
+import tilemapAnimationActions from '../../actions/animationActions/tilemapAnimation';
+
+
 import * as dat from 'dat.gui';
 
 import * as PIXI from 'pixi.js'
 
+const { updateAnimatedTiles, initializaAnimatedTiles } = tilemapAnimationActions;
 
 const ContainerDiv = styled.div`
 padding: 20px;
@@ -73,7 +77,7 @@ class PixiJSCanvasContainer extends Component {
 
 			// PIXI.BaseTexture.SCALE_MODE.DEFAULT = PIXI.BaseTexture.SCALE_MODE.NEAREST;
 
-			console.log(PIXI.SCALE_MODES);
+			this.props.initializaAnimatedTiles();
 			this.updateTilemapCanvas(this.props);
 
 			let texture = PIXI.Texture.fromCanvas(this.state.tilemapCanvas, PIXI.SCALE_MODES.NEAREST);
@@ -112,6 +116,8 @@ class PixiJSCanvasContainer extends Component {
 		let spritesheet = assetManager.getTilesetImage();
 		for (let [index, tileId] of props.tilemapJSON.layers[0].data.entries()){
 
+
+
 			this.drawTile(this.state.tilemapCanvasContext, spritesheet, {
 				xPositionInSpritesheet: ((tileId % (props.tilesetJSON.imagewidth/props.tilesetJSON.tilewidth)) - 1)  * props.tilesetJSON.tilewidth,
 				yPositionInSpritesheet: (Math.floor(tileId / (props.tilesetJSON.imagewidth/props.tilesetJSON.tileheight))) * props.tilesetJSON.tilewidth,
@@ -130,13 +136,17 @@ class PixiJSCanvasContainer extends Component {
 		ctx.drawImage(spritesheet, drawDetails.xPositionInSpritesheet, drawDetails.yPositionInSpritesheet, drawDetails.widthOfTileInSpritesheet, drawDetails.heightOfTileInSpritesheet, drawDetails.xPositionOnCanvas, drawDetails.yPositionOnCanvas, drawDetails.widthOfTileOnCanvas, drawDetails.heightOfTileOnCanvas);
 	}
 
+	getAnimatedTileIdIfNeeded(tileId) {
+
+	}
+
 
 	initGui = () => {
 		var drop;
 
-		this.gui.add( this.guiState, 'cameraZoomLevel', 0.1, 6.0 ).name( 'zoom' ).onChange(this.setGuiState);
-		this.gui.add( this.guiState, 'cameraPanX', -1000, 1000 ).name( 'panX' ).onChange(this.setGuiState);
-		this.gui.add( this.guiState, 'cameraPanY', -1000, 1000 ).name( 'panY' ).onChange(this.setGuiState);
+		this.gui.add( this.guiState, 'cameraZoomLevel', 0.05, 10.0 ).name( 'zoom' ).onChange(this.setGuiState);
+		this.gui.add( this.guiState, 'cameraPanX', -2000, 2000 ).name( 'panX' ).onChange(this.setGuiState);
+		this.gui.add( this.guiState, 'cameraPanY', -2000, 2000 ).name( 'panY' ).onChange(this.setGuiState);
 
 	}
 
@@ -149,7 +159,8 @@ class PixiJSCanvasContainer extends Component {
 
 	componentWillUnmount() {
 
-		this.gui.destroy()
+		this.gui.destroy();
+		this.stopRequestAnimationFrame();
 		window.removeEventListener("resize", this.onResize.bind(this));
 
 	}
@@ -179,6 +190,12 @@ class PixiJSCanvasContainer extends Component {
 	onResize() {
 		if (this.canvasElement){
 			this.updateCanvasDimensions();
+		}
+	}
+
+	tilemapAnimator = (time, props) => {
+		if (props.animationState.tilemapAnimator.lastTimeUpdated == 0){
+			this.props.updateAnimatedTiles(time);
 		}
 	}
 
@@ -232,12 +249,13 @@ class PixiJSCanvasContainer extends Component {
 
 export default connect((state) =>{
 	return {
-		assets: state.assetState,
-		tilesetJSON: state.assetState.tilesetJSON,
-		tilemapJSON: state.assetState.tilemapJSON
+		assets: state.tiledState,
+		tilesetJSON: state.tiledState.tiledData.tilesetJSON,
+		tilemapJSON: state.tiledState.tiledData.tilemapJSON
 	}
 },
 {
-
+	updateAnimatedTiles,
+	initializaAnimatedTiles
 }
 )(PixiJSCanvasContainer);

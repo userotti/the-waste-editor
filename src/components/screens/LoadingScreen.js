@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Form, Icon, Input, Button } from 'antd';
-import loadingActions from '../../actions/assetActions/loading'
+import loadingActions from '../../actions/tiledActions/loading'
 import {
   setTilesetJSONFileLocation,
   setTilesetSpritesheetFileLocation,
   setTilemapJSONFileLocation
-} from '../../actions/assetActions/fileLocations'
+} from '../../actions/tiledActions/fileLocations'
 
 import { assetManager } from '../../singletons/AssetManager'
 import { push } from 'react-router-redux';
@@ -14,7 +14,7 @@ import styled from 'styled-components';
 
 
 const FormItem = Form.Item;
-const { loadTilesetJSON, loadTilemapJSON, loadTilesetSpritesheet, allAssetsLoaded } = loadingActions;
+const { loadTilesetJSON, loadTilemapJSON, loadTilesetSpritesheet, allTiledAssetsLoaded } = loadingActions;
 
 
 const Container = styled.div`
@@ -88,7 +88,7 @@ class LoadingScreen extends Component {
           this.props.loadTilemapJSON(values.tilemapJSONLocation)
         ]).then((response)=>{
 
-          this.props.allAssetsLoaded();
+          this.props.allTiledAssetsLoaded();
           // this.props.push('/static-canvas');
 
         }).catch((err)=>{
@@ -183,13 +183,13 @@ const WrappedLoadingScreen = Form.create()(LoadingScreen);
 
 export default connect(
   state => ({
-    tilesetJSONLocation: state.assetState.fileLocations.tilesetJSONLocation,
-    tilesetSpritesheetLocation: state.assetState.fileLocations.tilesetSpritesheetLocation,
-    tilemapJSONLocation: state.assetState.fileLocations.tilemapJSONLocation,
+    tilesetJSONLocation: state.tiledState.fileLocations.tilesetJSONLocation,
+    tilesetSpritesheetLocation: state.tiledState.fileLocations.tilesetSpritesheetLocation,
+    tilemapJSONLocation: state.tiledState.fileLocations.tilemapJSONLocation,
 
-    tilesetJSON: state.assetState.tilesetJSON,
-    tilesetImageLoaded: state.assetState.tilesetImage,
-    tilemapJSON: state.assetState.tilemapJSON
+    tilesetJSON: state.tiledState.tiledData.tilesetJSON,
+    tilesetImageLoaded: state.tiledState.tilesetImage,
+    tilemapJSON: state.tiledState.tiledData.tilemapJSON
 
   }),
   {
@@ -197,6 +197,6 @@ export default connect(
     loadTilemapJSON,
     loadTilesetSpritesheet,
     push,
-    allAssetsLoaded
+    allTiledAssetsLoaded
   }
 )(WrappedLoadingScreen);
