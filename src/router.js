@@ -14,7 +14,7 @@ import ThreeJSCanvasContainer from './components/screens/ThreeJSCanvasContainer'
 import PixiJSCanvasContainer from './components/screens/PixiJSCanvasContainer'
 
 
-import loadingActions from './actions/assetActions/loading';
+import loadingActions from './actions/tiledActions/loading';
 
 
 const { loadTilesetJSON, loadTilemapJSON, loadTilesetSpritesheet, allTiledAssetsLoaded } = loadingActions;

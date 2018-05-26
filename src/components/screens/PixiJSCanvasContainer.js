@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components';
 import { assetManager } from '../../singletons/AssetManager';
-import tilemapAnimationActions from '../../actions/animationActions/tilemapAnimation';
+import tilemapAnimationActions from '../../actions/tiledActions/tilemapAnimation';
 
 
 import * as dat from 'dat.gui';
@@ -42,7 +42,7 @@ class PixiJSCanvasContainer extends Component {
 
 
 	state = {
-
+		staticTilesDrawn: false
 	}
 
 	constructor() {
@@ -77,8 +77,8 @@ class PixiJSCanvasContainer extends Component {
 
 			// PIXI.BaseTexture.SCALE_MODE.DEFAULT = PIXI.BaseTexture.SCALE_MODE.NEAREST;
 
-			this.props.initializaAnimatedTiles();
-			this.updateTilemapCanvas(this.props);
+			this.props.initializaAnimatedTiles(performance.now());
+			// this.updateTilemapCanvas(this.props);
 
 			let texture = PIXI.Texture.fromCanvas(this.state.tilemapCanvas, PIXI.SCALE_MODES.NEAREST);
 			let sprite1 = new PIXI.Sprite(texture);
@@ -105,6 +105,85 @@ class PixiJSCanvasContainer extends Component {
 			this.gui = new dat.GUI();
 			this.initGui();
 		});
+
+	}
+
+	drawStaticTiles(props, tilemapLayerName, canvas) {
+
+		let context = canvas.getContext('2d');
+		context.resetTransform();
+		context.clearRect(0,0, canvas.width, canvas.height);
+
+		let tilemapLayer;
+		for (let layer of props.tilemapJSON.layers){
+			if (layer.name === tilemapLayerName){
+				tilemapLayer = layer;
+			}
+		}
+
+		let spritesheet = assetManager.getTilesetImage();
+		for (let index = 0; index < tilemapLayer.data.length; index++){
+
+			let tileId = tilemapLayer.data[index];
+			//Only draw the tile that aren't part of the animating tiles
+			if (!props.animatedTilesInTileset[tileId-1]){
+				this.drawTile(context, spritesheet, {
+						xPositionInSpritesheet: ((tileId % (props.tilesetJSON.imagewidth/props.tilesetJSON.tilewidth)) - 1)  * props.tilesetJSON.tilewidth,
+						yPositionInSpritesheet: (Math.floor(tileId / (props.tilesetJSON.imagewidth/props.tilesetJSON.tileheight))) * props.tilesetJSON.tilewidth,
+						widthOfTileInSpritesheet: props.tilesetJSON.tilewidth,
+						heightOfTileInSpritesheet: props.tilesetJSON.tileheight,
+						xPositionOnCanvas: (index % tilemapLayer.width) * props.tilesetJSON.tilewidth,
+						yPositionOnCanvas: (Math.floor(index / tilemapLayer.width)) * props.tilesetJSON.tilewidth,
+						widthOfTileOnCanvas: props.tilesetJSON.tilewidth,
+						heightOfTileOnCanvas: props.tilesetJSON.tileheight
+				})
+			}
+
+
+
+		}
+
+	}
+
+	drawAnimatingTiles(props, tilemapLayerName, canvas) {
+
+		let context = canvas.getContext('2d');
+		context.resetTransform();
+		// context.clearRect(0,0, canvas.width, canvas.height);
+
+		let tilemapLayer;
+		for (let layer of props.tilemapJSON.layers){
+			if (layer.name === tilemapLayerName){
+				tilemapLayer = layer;
+			}
+		}
+
+		let spritesheet = assetManager.getTilesetImage();
+
+		for (var tileId in props.animatedTilesInTileset) {
+			if (props.animatedTilesInTileset.hasOwnProperty(tileId)) {
+
+				let tile = props.animatedTilesInTileset[tileId];
+
+				let animationFrameId = tile.animation[tile.currentFrameIndex].mapId;
+				let layerOccurences = props.animatedTilesInTileset[tileId].mapLayers[tilemapLayerName];
+				for (let tilemapLayerIndex of layerOccurences){
+
+					this.drawTile(context, spritesheet, {
+						xPositionInSpritesheet: ((animationFrameId % (props.tilesetJSON.imagewidth/props.tilesetJSON.tilewidth)) - 1)  * props.tilesetJSON.tilewidth,
+						yPositionInSpritesheet: (Math.floor(animationFrameId / (props.tilesetJSON.imagewidth/props.tilesetJSON.tileheight))) * props.tilesetJSON.tilewidth,
+						widthOfTileInSpritesheet: props.tilesetJSON.tilewidth,
+						heightOfTileInSpritesheet: props.tilesetJSON.tileheight,
+						xPositionOnCanvas: (tilemapLayerIndex % tilemapLayer.width) * props.tilesetJSON.tilewidth,
+						yPositionOnCanvas: (Math.floor(tilemapLayerIndex / tilemapLayer.width)) * props.tilesetJSON.tilewidth,
+						widthOfTileOnCanvas: props.tilesetJSON.tilewidth,
+						heightOfTileOnCanvas: props.tilesetJSON.tileheight
+					})
+
+				}
+			}
+		}
+
 
 	}
 
@@ -179,10 +258,10 @@ class PixiJSCanvasContainer extends Component {
 		}
 	}
 
-	animationLoop = (time) => {
+	animationLoop = (timestamp) => {
 		this.requestId = undefined;
 
-
+		// console.log(timestamp);
 
 		this.startRequestAnimationFrame();
 	}
@@ -232,6 +311,18 @@ class PixiJSCanvasContainer extends Component {
 
 	shouldComponentUpdate(props) {
 
+		// console.log("shouldComponentUpdate: props : ", props);
+		if (this.state.tilemapCanvas){
+			if (props.timeOfAnimationInitialization && !this.staticTilesDrawn){
+				console.warn("DRAWING VERY EXPENSIVE TILES NOW");
+				this.drawStaticTiles(props, 'Tile Layer 1', this.state.tilemapCanvas);
+				this.staticTilesDrawn = true;
+			}
+
+			this.drawAnimatingTiles(props, 'Tile Layer 1', this.state.tilemapCanvas);
+		}
+
+
 
 		return false;
 	}
@@ -248,10 +339,14 @@ class PixiJSCanvasContainer extends Component {
 
 
 export default connect((state) =>{
+
+	console.log("state.tiledState.tiledData.animationData.animatedTilesInTileset: ", Object.assign({}, state.tiledState.tiledData.animationData.animatedTilesInTileset));
 	return {
 		assets: state.tiledState,
 		tilesetJSON: state.tiledState.tiledData.tilesetJSON,
-		tilemapJSON: state.tiledState.tiledData.tilemapJSON
+		tilemapJSON: state.tiledState.tiledData.tilemapJSON,
+		animatedTilesInTileset: state.tiledState.tiledData.animationData.animatedTilesInTileset,
+		timeOfAnimationInitialization: state.tiledState.tiledData.animationData.timeOfInitialization
 	}
 },
 {

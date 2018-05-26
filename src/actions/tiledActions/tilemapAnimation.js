@@ -11,10 +11,10 @@ const actions = {
     };
   },
 
-  initializaAnimatedTiles: () => {
+  initializaAnimatedTiles: (_timeOfInitialization) => {
     return {
       type: 'INITIALIZE_ANIMATED_TILES',
-      payload: null
+      payload: _timeOfInitialization
     };
   },
 
