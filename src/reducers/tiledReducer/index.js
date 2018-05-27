@@ -69,6 +69,10 @@ function tiledDataReducer(state = {
               }, frame)
             })
 
+            tile.animationDuration = tile.animation.reduce((sum, item)=>{
+              return sum + item.duration
+            }, 0)
+
             tile.mapLayers = {};
 
             for (let layer of state.tilemapJSON.layers){
@@ -76,26 +80,24 @@ function tiledDataReducer(state = {
                 tile.mapLayers[layer.name] = getAllIndexes(layer.data, tile.mapId)
               }
             }
-            // tile.mapLayers = cleanArray(state.tilemapJSON.layers.map((layer)=>{
-            //
-            //   if (layer.data && layer.data.indexOf(tile.mapId) > 0){
-            //     return {
-            //       layerName: layer.name,
-            //       positionsInLayerData: getAllIndexes(layer.data, tile.mapId)
-            //     };
-            //   }
-            //   return null;
-            // }))
+
             tile.currentFrameIndex = 0;
             tile.lastTimeUpdated = action.payload;
-
             animationData.animatedTilesInTileset[tileId] = tile;
 
         }
     }
 
-    console.log("animationData: ",  animationData);
     return Object.assign({ ...state, animationData: animationData});
+
+    case 'UPDATE_ANIMATED_TILES':
+
+      
+      for(let tileThatNeedsUpdating of action.payload){
+        state.animationData.animatedTilesInTileset[tileThatNeedsUpdating.tileId].currentFrameIndex = tileThatNeedsUpdating.updatedFrameIndex;
+      }
+
+    return Object.assign({ ...state });
 
     default:
     return state

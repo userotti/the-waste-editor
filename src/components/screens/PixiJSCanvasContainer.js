@@ -49,9 +49,9 @@ class PixiJSCanvasContainer extends Component {
 		super();
 
 		this.guiState = {
-			cameraZoomLevel: 3,
-			cameraPanX: -595,
-			cameraPanY: -609,
+			cameraZoomLevel: 2.2,
+			cameraPanX: 0,
+			cameraPanY: 0,
 		}
 
 	}
@@ -76,12 +76,11 @@ class PixiJSCanvasContainer extends Component {
 		}, ()=>{
 
 			// PIXI.BaseTexture.SCALE_MODE.DEFAULT = PIXI.BaseTexture.SCALE_MODE.NEAREST;
-
+			console.log("performance.now(): ", performance.now());
 			this.props.initializaAnimatedTiles(performance.now());
-			// this.updateTilemapCanvas(this.props);
 
-			let texture = PIXI.Texture.fromCanvas(this.state.tilemapCanvas, PIXI.SCALE_MODES.NEAREST);
-			let sprite1 = new PIXI.Sprite(texture);
+			this.texture = PIXI.Texture.fromCanvas(this.state.tilemapCanvas, PIXI.SCALE_MODES.NEAREST);
+			let sprite1 = new PIXI.Sprite(this.texture);
 			sprite1.position.set(-sprite1.width/2, -sprite1.height/2)
 			// let graphic = new PIXI.Graphics();
 			// graphic.beginFill(0x5cafe2);
@@ -106,6 +105,10 @@ class PixiJSCanvasContainer extends Component {
 			this.initGui();
 		});
 
+		// setTimeout(()=>{
+		// 	this.stopRequestAnimationFrame();
+		// }, 500);
+
 	}
 
 	drawStaticTiles(props, tilemapLayerName, canvas) {
@@ -123,24 +126,20 @@ class PixiJSCanvasContainer extends Component {
 
 		let spritesheet = assetManager.getTilesetImage();
 		for (let index = 0; index < tilemapLayer.data.length; index++){
-
 			let tileId = tilemapLayer.data[index];
 			//Only draw the tile that aren't part of the animating tiles
 			if (!props.animatedTilesInTileset[tileId-1]){
 				this.drawTile(context, spritesheet, {
-						xPositionInSpritesheet: ((tileId % (props.tilesetJSON.imagewidth/props.tilesetJSON.tilewidth)) - 1)  * props.tilesetJSON.tilewidth,
-						yPositionInSpritesheet: (Math.floor(tileId / (props.tilesetJSON.imagewidth/props.tilesetJSON.tileheight))) * props.tilesetJSON.tilewidth,
-						widthOfTileInSpritesheet: props.tilesetJSON.tilewidth,
-						heightOfTileInSpritesheet: props.tilesetJSON.tileheight,
-						xPositionOnCanvas: (index % tilemapLayer.width) * props.tilesetJSON.tilewidth,
-						yPositionOnCanvas: (Math.floor(index / tilemapLayer.width)) * props.tilesetJSON.tilewidth,
-						widthOfTileOnCanvas: props.tilesetJSON.tilewidth,
-						heightOfTileOnCanvas: props.tilesetJSON.tileheight
+					xPositionInSpritesheet: ((tileId % (props.tilesetJSON.imagewidth/props.tilesetJSON.tilewidth)) - 1)  * props.tilesetJSON.tilewidth,
+					yPositionInSpritesheet: (Math.floor(tileId / (props.tilesetJSON.imagewidth/props.tilesetJSON.tileheight))) * props.tilesetJSON.tilewidth,
+					widthOfTileInSpritesheet: props.tilesetJSON.tilewidth,
+					heightOfTileInSpritesheet: props.tilesetJSON.tileheight,
+					xPositionOnCanvas: (index % tilemapLayer.width) * props.tilesetJSON.tilewidth,
+					yPositionOnCanvas: (Math.floor(index / tilemapLayer.width)) * props.tilesetJSON.tilewidth,
+					widthOfTileOnCanvas: props.tilesetJSON.tilewidth,
+					heightOfTileOnCanvas: props.tilesetJSON.tileheight
 				})
 			}
-
-
-
 		}
 
 	}
@@ -149,7 +148,6 @@ class PixiJSCanvasContainer extends Component {
 
 		let context = canvas.getContext('2d');
 		context.resetTransform();
-		// context.clearRect(0,0, canvas.width, canvas.height);
 
 		let tilemapLayer;
 		for (let layer of props.tilemapJSON.layers){
@@ -166,6 +164,7 @@ class PixiJSCanvasContainer extends Component {
 				let tile = props.animatedTilesInTileset[tileId];
 
 				let animationFrameId = tile.animation[tile.currentFrameIndex].mapId;
+				console.log('animationFrameId:', animationFrameId);
 				let layerOccurences = props.animatedTilesInTileset[tileId].mapLayers[tilemapLayerName];
 				for (let tilemapLayerIndex of layerOccurences){
 
@@ -184,41 +183,11 @@ class PixiJSCanvasContainer extends Component {
 			}
 		}
 
-
-	}
-
-	updateTilemapCanvas(props) {
-
-		this.state.tilemapCanvasContext.resetTransform();
-		this.state.tilemapCanvasContext.clearRect(0,0, this.state.tilemapCanvas.width, this.state.tilemapCanvas.height);
-
-		let spritesheet = assetManager.getTilesetImage();
-		for (let [index, tileId] of props.tilemapJSON.layers[0].data.entries()){
-
-
-
-			this.drawTile(this.state.tilemapCanvasContext, spritesheet, {
-				xPositionInSpritesheet: ((tileId % (props.tilesetJSON.imagewidth/props.tilesetJSON.tilewidth)) - 1)  * props.tilesetJSON.tilewidth,
-				yPositionInSpritesheet: (Math.floor(tileId / (props.tilesetJSON.imagewidth/props.tilesetJSON.tileheight))) * props.tilesetJSON.tilewidth,
-				widthOfTileInSpritesheet: props.tilesetJSON.tilewidth,
-				heightOfTileInSpritesheet: props.tilesetJSON.tileheight,
-				xPositionOnCanvas: (index % props.tilemapJSON.layers[0].width) * props.tilesetJSON.tilewidth,
-				yPositionOnCanvas: (Math.floor(index / props.tilemapJSON.layers[0].width)) * props.tilesetJSON.tilewidth,
-				widthOfTileOnCanvas: props.tilesetJSON.tilewidth,
-				heightOfTileOnCanvas: props.tilesetJSON.tileheight
-			})
-		}
-
 	}
 
 	drawTile(ctx, spritesheet, drawDetails){
 		ctx.drawImage(spritesheet, drawDetails.xPositionInSpritesheet, drawDetails.yPositionInSpritesheet, drawDetails.widthOfTileInSpritesheet, drawDetails.heightOfTileInSpritesheet, drawDetails.xPositionOnCanvas, drawDetails.yPositionOnCanvas, drawDetails.widthOfTileOnCanvas, drawDetails.heightOfTileOnCanvas);
 	}
-
-	getAnimatedTileIdIfNeeded(tileId) {
-
-	}
-
 
 	initGui = () => {
 		var drop;
@@ -244,7 +213,6 @@ class PixiJSCanvasContainer extends Component {
 
 	}
 
-
 	startRequestAnimationFrame() {
 		if (!this.requestId) {
 			this.requestId = window.requestAnimationFrame(this.animationLoop);
@@ -261,7 +229,64 @@ class PixiJSCanvasContainer extends Component {
 	animationLoop = (timestamp) => {
 		this.requestId = undefined;
 
-		// console.log(timestamp);
+		// console.log("timestamp: ", timestamp);
+		// console.log("this.props.timeOfAnimationInitialization: ", this.props.timeOfAnimationInitialization);
+
+		if (this.props.timeOfAnimationInitialization && timestamp > this.props.timeOfAnimationInitialization){
+			let tilesThatNeedUpdating = [];
+
+			for (let tileId in this.props.animatedTilesInTileset) {
+				if (this.props.animatedTilesInTileset.hasOwnProperty(tileId)) {
+
+					let tile = this.props.animatedTilesInTileset[tileId];
+
+					// console.log("tileId: ", tileId);
+					// console.log("tile.lastTimeUpdated: ", tile.lastTimeUpdated);
+
+					let timeDifference = timestamp - tile.lastTimeUpdated;
+					// console.log("timeDifference: ", timeDifference);
+					// console.log("tile.animationDuration: ", tile.animationDuration);
+
+
+
+
+					let timeIntoAnimation = timeDifference % tile.animationDuration;
+
+					// console.log("timeIntoAnimation: ", timeIntoAnimation);
+
+					for(let [index, frame] of tile.animation.entries()){
+
+						// console.log("frame.duration: ", frame.duration);
+						// console.log("timeIntoAnimation: ", timeIntoAnimation);
+
+						if (timeIntoAnimation < frame.duration){
+
+							if (tile.currentFrameIndex != index){
+								tilesThatNeedUpdating.push({
+									tileId: tileId,
+									updatedFrameIndex: index
+								})
+							}
+
+							break;
+
+						}
+
+						timeIntoAnimation = timeIntoAnimation - frame.duration;
+
+					}
+
+
+				}
+			}
+
+			if (tilesThatNeedUpdating.length){
+				this.props.updateAnimatedTiles(tilesThatNeedUpdating)
+			}
+			// console.log("tilesThatNeedUpdating: ", tilesThatNeedUpdating);
+
+
+		}
 
 		this.startRequestAnimationFrame();
 	}
@@ -272,36 +297,25 @@ class PixiJSCanvasContainer extends Component {
 		}
 	}
 
-	tilemapAnimator = (time, props) => {
-		if (props.animationState.tilemapAnimator.lastTimeUpdated == 0){
-			this.props.updateAnimatedTiles(time);
-		}
-	}
-
 	updateCanvasDimensions() {
 		if (this.canvasElement){
 
-
 			//Make fullscreen canvas, but we can do anything here.
-
 			// Lookup the size the browser is displaying the canvas.
 			var displayWidth  = 800;
 			var displayHeight = 800;
 
 			// Check if the canvas is not the same size.
 			if (this.canvasElement.width  !== 800 || this.canvasElement.height !== 800) {
-
 				// Make the canvas the same size
-				console.log("displayWidth: ", displayWidth);
 				this.canvasElement.width  = displayWidth;
 				this.canvasElement.height = displayHeight;
-
-
 			}
 		}
 	}
 
 	screenTap = () => {
+
 	}
 
 	onWheel = (e) => {
@@ -311,15 +325,15 @@ class PixiJSCanvasContainer extends Component {
 
 	shouldComponentUpdate(props) {
 
-		// console.log("shouldComponentUpdate: props : ", props);
+		console.log("shouldComponentUpdate: props : ", props);
 		if (this.state.tilemapCanvas){
 			if (props.timeOfAnimationInitialization && !this.staticTilesDrawn){
 				console.warn("DRAWING VERY EXPENSIVE TILES NOW");
 				this.drawStaticTiles(props, 'Tile Layer 1', this.state.tilemapCanvas);
 				this.staticTilesDrawn = true;
 			}
-
 			this.drawAnimatingTiles(props, 'Tile Layer 1', this.state.tilemapCanvas);
+			this.texture.update();
 		}
 
 
@@ -340,7 +354,7 @@ class PixiJSCanvasContainer extends Component {
 
 export default connect((state) =>{
 
-	console.log("state.tiledState.tiledData.animationData.animatedTilesInTileset: ", Object.assign({}, state.tiledState.tiledData.animationData.animatedTilesInTileset));
+
 	return {
 		assets: state.tiledState,
 		tilesetJSON: state.tiledState.tiledData.tilesetJSON,
