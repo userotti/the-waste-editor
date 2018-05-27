@@ -24,6 +24,38 @@
                  "duration":450,
                  "tileid":260
                 }]
+        },
+     "320":
+        {
+         "animation":[
+                {
+                 "duration":400,
+                 "tileid":290
+                }, 
+                {
+                 "duration":100,
+                 "tileid":291
+                }, 
+                {
+                 "duration":100,
+                 "tileid":292
+                }, 
+                {
+                 "duration":100,
+                 "tileid":293
+                }, 
+                {
+                 "duration":100,
+                 "tileid":294
+                }, 
+                {
+                 "duration":100,
+                 "tileid":293
+                }, 
+                {
+                 "duration":100,
+                 "tileid":291
+                }]
         }
     },
  "tilewidth":16,

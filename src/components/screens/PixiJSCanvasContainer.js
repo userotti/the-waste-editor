@@ -52,6 +52,7 @@ class PixiJSCanvasContainer extends Component {
 			cameraZoomLevel: 2.2,
 			cameraPanX: 0,
 			cameraPanY: 0,
+			tint: 1
 		}
 
 	}
@@ -80,14 +81,17 @@ class PixiJSCanvasContainer extends Component {
 			this.props.initializaAnimatedTiles(performance.now());
 
 			this.texture = PIXI.Texture.fromCanvas(this.state.tilemapCanvas, PIXI.SCALE_MODES.NEAREST);
-			let sprite1 = new PIXI.Sprite(this.texture);
-			sprite1.position.set(-sprite1.width/2, -sprite1.height/2)
+			this.sprite1 = new PIXI.Sprite(this.texture);
+
+			this.sprite1.tint = 0xFFFFFF;
+
+			this.sprite1.position.set(-this.sprite1.width/2, -this.sprite1.height/2)
 			// let graphic = new PIXI.Graphics();
 			// graphic.beginFill(0x5cafe2);
 			// graphic.drawRect(10,10,400,400);
 
 			this.camera = new PIXI.Container();
-			this.camera.addChild(sprite1);
+			this.camera.addChild(this.sprite1);
 			this.state.pixiApp.stage.addChild(this.camera);
 
 			this.setGuiState();
@@ -195,6 +199,8 @@ class PixiJSCanvasContainer extends Component {
 		this.gui.add( this.guiState, 'cameraZoomLevel', 0.05, 10.0 ).name( 'zoom' ).onChange(this.setGuiState);
 		this.gui.add( this.guiState, 'cameraPanX', -2000, 2000 ).name( 'panX' ).onChange(this.setGuiState);
 		this.gui.add( this.guiState, 'cameraPanY', -2000, 2000 ).name( 'panY' ).onChange(this.setGuiState);
+		this.gui.add( this.guiState, 'tint', 0, 1 ).name( 'tint' ).onChange(this.setGuiState);
+
 
 	}
 
@@ -202,6 +208,7 @@ class PixiJSCanvasContainer extends Component {
 		this.camera.scale.set(this.guiState.cameraZoomLevel, this.guiState.cameraZoomLevel);
 		this.camera.pivot.set(this.guiState.cameraPanX, this.guiState.cameraPanY)
 		this.camera.position.set(this.canvasElement.width/2, this.canvasElement.height/2);
+		this.sprite1.tint = this.guiState.tint * 0xFFFFFF;
 	}
 
 

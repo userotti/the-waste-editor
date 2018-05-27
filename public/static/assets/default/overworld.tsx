@@ -8,4 +8,15 @@
    <frame tileid="260" duration="450"/>
   </animation>
  </tile>
+ <tile id="320">
+  <animation>
+   <frame tileid="290" duration="400"/>
+   <frame tileid="291" duration="100"/>
+   <frame tileid="292" duration="100"/>
+   <frame tileid="293" duration="100"/>
+   <frame tileid="294" duration="100"/>
+   <frame tileid="293" duration="100"/>
+   <frame tileid="291" duration="100"/>
+  </animation>
+ </tile>
 </tileset>
