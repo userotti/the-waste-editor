@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-function tilesetJSONLocation(state = '/static/assets/default/exports/tileset.json', action) {
+function tilesetJSONLocation(state = '/static/assets/custom/exports/base_tile_set.json', action) {
     switch (action.type) {
         case 'TILESET_JSON_LOCATION':
             return action.payload;
@@ -10,7 +10,7 @@ function tilesetJSONLocation(state = '/static/assets/default/exports/tileset.jso
     }
 }
 
-function tilesetSpritesheetLocation(state = '/static/assets/default/exports/spritesheet.png', action) {
+function tilesetSpritesheetLocation(state = '/static/assets/custom/exports/base_tile_sheet.png', action) {
     switch (action.type) {
         case 'TILESET_SPRITESHEET_LOCATION':
             return action.payload;
@@ -19,7 +19,7 @@ function tilesetSpritesheetLocation(state = '/static/assets/default/exports/spri
     }
 }
 
-function tilemapJSONLocation(state = '/static/assets/default/exports/map.json', action) {
+function tilemapJSONLocation(state = '/static/assets/custom/exports/base_tile_map.json', action) {
     switch (action.type) {
         case 'TILEMAP_FILE_LOCATION':
             return action.payload;

@@ -115,11 +115,13 @@ class PixiJSCanvasContainer extends Component {
 
 	}
 
-	drawStaticTiles(props, tilemapLayerName, canvas) {
+	drawStaticTiles(props, tilemapLayerName, canvas, clearRect) {
 
 		let context = canvas.getContext('2d');
 		context.resetTransform();
-		context.clearRect(0,0, canvas.width, canvas.height);
+		if (clearRect){
+			context.clearRect(0,0, canvas.width, canvas.height);
+		}
 
 		let tilemapLayer;
 		for (let layer of props.tilemapJSON.layers){
@@ -168,7 +170,6 @@ class PixiJSCanvasContainer extends Component {
 				let tile = props.animatedTilesInTileset[tileId];
 
 				let animationFrameId = tile.animation[tile.currentFrameIndex].mapId;
-				console.log('animationFrameId:', animationFrameId);
 				let layerOccurences = props.animatedTilesInTileset[tileId].mapLayers[tilemapLayerName];
 				for (let tilemapLayerIndex of layerOccurences){
 
@@ -236,66 +237,45 @@ class PixiJSCanvasContainer extends Component {
 	animationLoop = (timestamp) => {
 		this.requestId = undefined;
 
-		// console.log("timestamp: ", timestamp);
-		// console.log("this.props.timeOfAnimationInitialization: ", this.props.timeOfAnimationInitialization);
 
-		if (this.props.timeOfAnimationInitialization && timestamp > this.props.timeOfAnimationInitialization){
-			let tilesThatNeedUpdating = [];
+		this.animateTiles(timestamp, this.props);
 
-			for (let tileId in this.props.animatedTilesInTileset) {
-				if (this.props.animatedTilesInTileset.hasOwnProperty(tileId)) {
-
-					let tile = this.props.animatedTilesInTileset[tileId];
-
-					// console.log("tileId: ", tileId);
-					// console.log("tile.lastTimeUpdated: ", tile.lastTimeUpdated);
-
-					let timeDifference = timestamp - tile.lastTimeUpdated;
-					// console.log("timeDifference: ", timeDifference);
-					// console.log("tile.animationDuration: ", tile.animationDuration);
-
-
-
-
-					let timeIntoAnimation = timeDifference % tile.animationDuration;
-
-					// console.log("timeIntoAnimation: ", timeIntoAnimation);
-
-					for(let [index, frame] of tile.animation.entries()){
-
-						// console.log("frame.duration: ", frame.duration);
-						// console.log("timeIntoAnimation: ", timeIntoAnimation);
-
-						if (timeIntoAnimation < frame.duration){
-
-							if (tile.currentFrameIndex != index){
-								tilesThatNeedUpdating.push({
-									tileId: tileId,
-									updatedFrameIndex: index
-								})
-							}
-
-							break;
-
-						}
-
-						timeIntoAnimation = timeIntoAnimation - frame.duration;
-
-					}
-
-
-				}
-			}
-
-			if (tilesThatNeedUpdating.length){
-				this.props.updateAnimatedTiles(tilesThatNeedUpdating)
-			}
-			// console.log("tilesThatNeedUpdating: ", tilesThatNeedUpdating);
-
-
-		}
 
 		this.startRequestAnimationFrame();
+	}
+
+	animateTiles(timestamp, props) {
+		let tilesThatNeedUpdating = [];
+
+		//Update the animating tile if necessary
+		for (let tileId in props.animatedTilesInTileset) {
+			if (props.animatedTilesInTileset.hasOwnProperty(tileId)) {
+
+				let tile = props.animatedTilesInTileset[tileId];
+				let timeDifference = timestamp - tile.lastTimeUpdated;
+				let timeIntoAnimation = timeDifference % tile.animationDuration;
+
+				for(let [index, frame] of tile.animation.entries()){
+
+					if (timeIntoAnimation < frame.duration){
+						if (tile.currentFrameIndex != index){
+							tilesThatNeedUpdating.push({
+								tileId: tileId,
+								updatedFrameIndex: index
+							})
+						}
+						break;
+					}
+
+					timeIntoAnimation = timeIntoAnimation - frame.duration;
+				}
+			}
+		}
+
+		//Fire the redux action to updated the tiles!
+		if (tilesThatNeedUpdating.length){
+			props.updateAnimatedTiles(tilesThatNeedUpdating)
+		}
 	}
 
 	onResize() {
@@ -336,7 +316,8 @@ class PixiJSCanvasContainer extends Component {
 		if (this.state.tilemapCanvas){
 			if (props.timeOfAnimationInitialization && !this.staticTilesDrawn){
 				console.warn("DRAWING VERY EXPENSIVE TILES NOW");
-				this.drawStaticTiles(props, 'Tile Layer 1', this.state.tilemapCanvas);
+				this.drawStaticTiles(props, 'baselayer', this.state.tilemapCanvas, true);
+				this.drawStaticTiles(props, 'shrubs', this.state.tilemapCanvas, false);
 				this.staticTilesDrawn = true;
 			}
 			this.drawAnimatingTiles(props, 'Tile Layer 1', this.state.tilemapCanvas);
@@ -345,13 +326,12 @@ class PixiJSCanvasContainer extends Component {
 
 
 
-		return false;
+		return true;
 	}
 
 	render() {
 		return (
 			<ContainerDiv>
-				<StyledHeading>Canvas:</StyledHeading>
 				<StyledCanvas innerRef={(canvas) => { this.canvasElement = canvas }} onClick={() => this.screenTap() } />
 			</ContainerDiv>
 		);
