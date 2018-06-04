@@ -1,13 +1,13 @@
-{ "columns":32,
+{ "columns":16,
  "image":"base_tile_sheet.png",
  "imageheight":512,
  "imagewidth":512,
  "margin":0,
- "name":"thewaste",
+ "name":"base_tile_set2",
  "spacing":0,
- "tilecount":1024,
- "tileheight":16,
- "tilewidth":16,
+ "tilecount":256,
+ "tileheight":32,
+ "tilewidth":32,
  "transparentcolor":"#ff00ff",
  "type":"tileset"
 }
